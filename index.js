@@ -1,15 +1,15 @@
 const mongoose = require("mongoose");
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const app = express();
 const port = 3000;
+require("dotenv").config();
 
+app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json
 
-mongoose.connect(
-  "mongodb+srv://owlp-api:HjVabntCY44RwBnw@jokenpo-db.xs3zb.gcp.mongodb.net/jokenpo-db?retryWrites=true&w=majority",
-  { useNewUrlParser: true }
-);
+mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true });
 
 const Score = mongoose.model("Score", { name: String, points: Number });
 
