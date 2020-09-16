@@ -15,7 +15,7 @@ const Score = mongoose.model("Score", { name: String, points: Number });
 
 app.get("/", (req, res) => {
   Score.find({})
-    .sort({ score: -1 })
+    .desc("score")
     .exec((err, docs) => {
       if (err) {
         return res.status(500).send([]);
@@ -30,7 +30,7 @@ app.post("/", async (req, res) => {
 
   await newScore.save();
   Score.find({})
-    .sort({ score: -1 })
+    .desc("score")
     .exec((err, docs) => {
       if (err) {
         return res.status(500).send([]);
