@@ -80,14 +80,14 @@ app.post("/signup", async (req, res) => {
     const userCheck = await User.find({ email: email }).exec();
 
     if (userCheck) {
-      return response.status(403).json({ message: "Already exists" });
+      return res.status(403).json({ message: "Already exists" });
     }
 
     const passwordEncrypted = await bcrypt.hash(password, 10);
 
     const user = new User({ name, email, password: passwordEncrypted });
 
-    user.save();
+    await user.save();
 
     const token = jwt.sign({ id: user.id }, process.env.SECRET);
 
