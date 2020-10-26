@@ -46,15 +46,16 @@ const AuthGuard = async (req, res, next) => {
   }
   const tokenClear = token.replace("Bearer ", "");
   console.log(tokenClear);
-  jwt.decode(tokenClear, process.env.SECRET, async (err, decoded) => {
-    if (!err) {
-      return res.status(401).json({ message: "Token was invalid" });
-    }
-    console.log("user", decoded);
-    const user = await User.findById(decoded.id).exec();
-    console.log("user", user);
-    req.user = user;
-  });
+  const decoded = jwt.verify(tokenClear, process.env.SECRET);
+
+  if (!decoded) {
+    return res.status(401).json({ message: "Token was invalid" });
+  }
+
+  console.log("user", decoded);
+  const user = await User.findById(decoded.id).exec();
+  console.log("user", user);
+  req.user = user;
 
   next();
 };
