@@ -108,6 +108,7 @@ app.get("/score/:game", (req, res) => {
   const params = req.params;
   Score.find(oarams)
     .sort("-score")
+    .populate("user")
     .exec((err, docs) => {
       if (err) {
         return res.status(500).send([]);
@@ -123,6 +124,7 @@ app.post("/score", AuthGuard, async (req, res) => {
   await newScore.save();
   Score.find({ game })
     .sort("-score")
+    .populate("user")
     .exec((err, docs) => {
       if (err) {
         return res.status(500).send([]);
@@ -133,17 +135,26 @@ app.post("/score", AuthGuard, async (req, res) => {
 });
 
 app.post("/chat", AuthGuard, async (req, res) => {
-  const { message } = req.params;
-  const text = new Message({
-    text: message,
-    date: new Date(),
-    user: req.user.id,
-  });
+  try {
+    const { message } = req.params;
+    const text = new Message({
+      text: message,
+      date: new Date(),
+      user: req.user.id,
+    });
+
+    await text.save();
+
+    return res.status(200).json({ sent: true });
+  } catch (err) {
+    return res.status(500).json({ sent: false });
+  }
 });
 
 app.get("/chat", AuthGuard, async (req, res) => {
   Message.find({})
     .sort("-date")
+    .populate("user")
     .exec((err, docs) => {
       if (err) {
         return res.status(500).send([]);
