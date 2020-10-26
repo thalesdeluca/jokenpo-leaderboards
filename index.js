@@ -17,63 +17,61 @@ const Score = mongoose.model("Score", {
   name: String,
   points: Number,
   game: String,
-  user_id: mongoose.Types.ObjectId
+  user_id: mongoose.Types.ObjectId,
 });
 
 const User = mongoose.model("User", {
   name: String,
   email: String,
-  password: String
+  password: String,
 });
 
 const Chat = mongoose.model("Chat", {
-  users: Array
+  users: Array,
 });
 
 const Message = mongoose.model("Message", {
   text: String,
-  user_id: mongoose.Types.ObjectId
+  user_id: mongoose.Types.ObjectId,
 });
 
 const AuthGuard = async (req, res, next) => {
   const token = String(req.headers.authorization);
 
   if (!token.includes("Bearer")) {
-    return res.status(401).json({ message: "Token was not provided" })
+    return res.status(401).json({ message: "Token was not provided" });
   }
 
-
-  jwt.verify(token, process.env.SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.SECRET, async (err, decoded) => {
     if (!err) {
-      return res.status(401).json({ message: "Token was invalid" })
+      return res.status(401).json({ message: "Token was invalid" });
     }
 
     const user = await User.findById(decoded.id).exec();
     req.user = user;
-  })
+  });
 
   next();
-}
+};
 
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.find({ email: email }).exec();
 
-    const match = await bcrypt.compare(password, user.password)
+    const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      return response.status(401).json({ message: "Passwords do not match" })
+      return response.status(401).json({ message: "Passwords do not match" });
     }
 
     const token = jwt.sign({ id: user.id });
 
-    return response.status(200).json({ token })
-
+    return response.status(200).json({ token });
   } catch (err) {
-    return response.status(500).json(err)
+    return response.status(500).json(err);
   }
-})
+});
 
 app.post("/signup", async (req, res) => {
   try {
@@ -83,17 +81,15 @@ app.post("/signup", async (req, res) => {
 
     const user = new User({ name, email, password: passwordEncrypted });
 
-    user.save()
+    user.save();
 
     const token = jwt.sign({ id: user.id });
 
-    return response.status(200).json({ token })
-
+    return response.status(200).json({ token });
   } catch (err) {
-    return response.status(500).json(err)
+    return response.status(500).json(err);
   }
-})
-
+});
 
 app.get("/", (req, res) => {
   Score.find({})
@@ -122,13 +118,9 @@ app.post("/score", AuthGuard, async (req, res) => {
     });
 });
 
-app.post("/chat", AuthGuard, async (req, res) => {
+app.post("/chat", AuthGuard, async (req, res) => {});
 
-})
-
-app.get("/chat/:id", AuthGuard, async (req, res) => {
-
-})
+app.get("/chat/:id", AuthGuard, async (req, res) => {});
 
 app.listen(process.env.PORT || port, () => {
   console.log("started");
