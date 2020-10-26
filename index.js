@@ -151,7 +151,7 @@ app.post("/chat", AuthGuard, async (req, res) => {
   }
 });
 
-app.get("/chat", AuthGuard, async (req, res) => {
+app.get("/chat", async (req, res) => {
   Message.find({})
     .sort("-date")
     .populate("user", "name")
