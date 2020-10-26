@@ -41,8 +41,8 @@ const AuthGuard = async (req, res, next) => {
   if (!token.includes("Bearer")) {
     return res.status(401).json({ message: "Token was not provided" });
   }
-
-  jwt.verify(token, process.env.SECRET, async (err, decoded) => {
+  const tokenClear = token.replace("Bearer ", "");
+  jwt.verify(tokenClear, process.env.SECRET, async (err, decoded) => {
     if (!err) {
       return res.status(401).json({ message: "Token was invalid" });
     }
