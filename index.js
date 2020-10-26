@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { response } = require("express");
 const app = express();
 const port = 3000;
 require("dotenv").config();
@@ -76,6 +77,11 @@ app.post("/login", async (req, res) => {
 app.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    const user = await User.find({ email: email }).exec();
+
+    if (user) {
+      return response.status(403).json({ message: "Already exists" });
+    }
 
     const passwordEncrypted = await bcrypt.hash(password, 10);
 
