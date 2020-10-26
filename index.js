@@ -65,7 +65,7 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Passwords do not match" });
     }
 
-    const token = jwt.sign({ id: user.id });
+    const token = jwt.sign({ id: user.id }, process.env.SECRET);
 
     return res.status(200).json({ token });
   } catch (err) {
@@ -83,7 +83,7 @@ app.post("/signup", async (req, res) => {
 
     user.save();
 
-    const token = jwt.sign({ id: user.id });
+    const token = jwt.sign({ id: user.id }, process.env.SECRET);
 
     return res.status(200).json({ token });
   } catch (err) {
