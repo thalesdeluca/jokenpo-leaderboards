@@ -62,14 +62,14 @@ app.post("/login", async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      return response.status(401).json({ message: "Passwords do not match" });
+      return res.status(401).json({ message: "Passwords do not match" });
     }
 
     const token = jwt.sign({ id: user.id });
 
-    return response.status(200).json({ token });
+    return res.status(200).json({ token });
   } catch (err) {
-    return response.status(500).json(err);
+    return res.status(500).json(err);
   }
 });
 
@@ -85,9 +85,9 @@ app.post("/signup", async (req, res) => {
 
     const token = jwt.sign({ id: user.id });
 
-    return response.status(200).json({ token });
+    return res.status(200).json({ token });
   } catch (err) {
-    return response.status(500).json(err);
+    return res.status(500).json(err);
   }
 });
 
