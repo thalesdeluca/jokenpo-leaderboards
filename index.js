@@ -18,7 +18,10 @@ const Score = mongoose.model("Score", {
   name: String,
   points: Number,
   game: String,
-  user_id: mongoose.Types.ObjectId,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 const User = mongoose.model("User", {
@@ -27,13 +30,13 @@ const User = mongoose.model("User", {
   password: String,
 });
 
-const Chat = mongoose.model("Chat", {
-  users: Array,
-});
-
 const Message = mongoose.model("Message", {
   text: String,
-  user_id: mongoose.Types.ObjectId,
+  created_at: mongoose.Schema.Types.Date,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 const AuthGuard = async (req, res, next) => {
@@ -99,8 +102,9 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  Score.find({})
+app.get("/score/:game", (req, res) => {
+  const params = req.params;
+  Score.find(oarams)
     .sort("-score")
     .exec((err, docs) => {
       if (err) {
@@ -111,11 +115,11 @@ app.get("/", (req, res) => {
 });
 
 app.post("/score", AuthGuard, async (req, res) => {
-  const { name, points } = req.body;
-  const newScore = new Score({ name, points });
+  const { name, points, game } = req.body;
+  const newScore = new Score({ name, points, game, user: req.user.id });
 
   await newScore.save();
-  Score.find({})
+  Score.find({ game })
     .sort("-score")
     .exec((err, docs) => {
       if (err) {
@@ -126,9 +130,26 @@ app.post("/score", AuthGuard, async (req, res) => {
     });
 });
 
-app.post("/chat", AuthGuard, async (req, res) => {});
+app.post("/chat", AuthGuard, async (req, res) => {
+  const { message } = req.params;
+  const text = new Message({
+    text: message,
+    date: new Date(),
+    user: req.user.id,
+  });
+});
 
-app.get("/chat/:id", AuthGuard, async (req, res) => {});
+app.get("/chat", AuthGuard, async (req, res) => {
+  Message.find({})
+    .sort("-date")
+    .exec((err, docs) => {
+      if (err) {
+        return res.status(500).send([]);
+      }
+
+      res.status(200).send(docs);
+    });
+});
 
 app.listen(process.env.PORT || port, () => {
   console.log("started");
