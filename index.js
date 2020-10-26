@@ -106,7 +106,8 @@ app.post("/signup", async (req, res) => {
 
 app.get("/score/:game", (req, res) => {
   const params = req.params;
-  Score.find(oarams)
+
+  Score.find(params)
     .sort("-score")
     .populate("user", "name")
     .exec((err, docs) => {
