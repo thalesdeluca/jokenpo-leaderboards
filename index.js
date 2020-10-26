@@ -139,7 +139,7 @@ app.post("/chat", AuthGuard, async (req, res) => {
     const { message } = req.body;
     const text = new Message({
       text: message,
-      date: new Date(),
+      created_at: new Date(),
       user: req.user.id,
     });
 
