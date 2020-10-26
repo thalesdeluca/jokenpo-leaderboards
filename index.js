@@ -15,7 +15,6 @@ app.use(bodyParser.json()); // for parsing application/json
 mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true });
 
 const Score = mongoose.model("Score", {
-  name: String,
   points: Number,
   game: String,
   user: {
@@ -52,6 +51,7 @@ const AuthGuard = async (req, res, next) => {
     }
 
     const user = await User.findById(decoded.id).exec();
+    console.log("user", user);
     req.user = user;
   });
 
@@ -115,8 +115,8 @@ app.get("/score/:game", (req, res) => {
 });
 
 app.post("/score", AuthGuard, async (req, res) => {
-  const { name, points, game } = req.body;
-  const newScore = new Score({ name, points, game, user: req.user.id });
+  const { points, game } = req.body;
+  const newScore = new Score({ points, game, user: req.user.id });
 
   await newScore.save();
   Score.find({ game })
