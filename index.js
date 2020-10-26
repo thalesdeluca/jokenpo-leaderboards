@@ -35,7 +35,7 @@ const Message = mongoose.model("Message", {
   user_id: mongoose.Types.ObjectId
 });
 
-const AuthGuard = (req, res, next) => {
+const AuthGuard = async (req, res, next) => {
   const token = String(req.headers.authorization);
 
   if (!token.includes("Bearer")) {
