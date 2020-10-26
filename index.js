@@ -77,7 +77,7 @@ app.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    const passwordEncrypted = bcrypt.hash(password, 10);
+    const passwordEncrypted = await bcrypt.hash(password, 10);
 
     const user = new User({ name, email, password: passwordEncrypted });
 
