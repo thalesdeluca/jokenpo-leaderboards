@@ -77,9 +77,9 @@ app.post("/login", async (req, res) => {
 app.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const user = await User.find({ email: email }).exec();
+    const userCheck = await User.find({ email: email }).exec();
 
-    if (user) {
+    if (userCheck) {
       return response.status(403).json({ message: "Already exists" });
     }
 
