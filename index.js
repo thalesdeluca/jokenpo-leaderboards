@@ -58,7 +58,7 @@ const AuthGuard = async (req, res, next) => {
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.find({ email: email }).exec();
+    const user = await User.findOne({ email: email }).exec();
     console.log(password, user.passwor, user);
     const match = await bcrypt.compare(password, user.password);
 
