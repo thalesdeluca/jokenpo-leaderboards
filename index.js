@@ -73,7 +73,7 @@ app.post("/login", async (req, res) => {
 
     const token = jwt.sign({ id: user.id }, process.env.SECRET);
 
-    return res.status(200).json({ token });
+    return res.status(200).json({ user, token });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: err.code });
@@ -97,7 +97,7 @@ app.post("/signup", async (req, res) => {
 
     const token = jwt.sign({ id: user.id }, process.env.SECRET);
 
-    return res.status(200).json({ token });
+    return res.status(200).json({ user, token });
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
@@ -155,7 +155,7 @@ app.post("/chat", AuthGuard, async (req, res) => {
 app.get("/chat", async (req, res) => {
   Message.find({})
     .sort("-date")
-    .populate("user", "name")
+    .populate("user", "-password")
     .exec((err, docs) => {
       if (err) {
         return res.status(500).send([]);
